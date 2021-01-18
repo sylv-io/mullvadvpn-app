@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import { colors } from '../../config.json';
 import * as AppButton from './AppButton';
 import * as Cell from './cell';
+import { mediumText } from './common-styles';
+import ImageView from './ImageView';
 import { Container } from './Layout';
 import { NavigationScrollbars } from './NavigationBar';
 
@@ -81,4 +83,49 @@ export const StyledBrowseButton = styled(AppButton.BlueButton)({
 
 export const StyledCellContainer = styled(Cell.Container)({
   marginBottom: '20px',
+});
+
+export const StyledSearchContainer = styled.div({
+  position: 'relative',
+  marginBottom: '20px',
+});
+
+export const StyledSearchInput = styled.input.attrs({ type: 'text' })({
+  ...mediumText,
+  width: 'calc(100% - 22px * 2)',
+  border: 'none',
+  borderRadius: '4px',
+  padding: '9px 38px',
+  margin: '0 22px',
+  color: colors.white60,
+  backgroundColor: colors.white10,
+  ':focus': {
+    color: colors.blue,
+    backgroundColor: colors.white,
+  },
+});
+
+export const StyledClearButton = styled.button({
+  position: 'absolute',
+  top: '50%',
+  transform: 'translateY(-50%)',
+  right: '32px',
+  border: 'none',
+  background: 'none',
+});
+
+export const StyledSearchIcon = styled(ImageView)({
+  position: 'absolute',
+  top: '50%',
+  transform: 'translateY(-50%)',
+  left: '32px',
+  [`${StyledSearchInput}:focus ~ &`]: {
+    backgroundColor: colors.blue,
+  },
+});
+
+export const StyledClearIcon = styled(ImageView)({
+  [`${StyledSearchInput}:focus ~ ${StyledClearButton} &`]: {
+    backgroundColor: colors.blue,
+  },
 });
