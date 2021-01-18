@@ -36,6 +36,11 @@ import {
   StyledSpinnerRow,
   StyledBrowseButton,
   StyledCellContainer,
+  StyledSearchContainer,
+  StyledSearchInput,
+  StyledClearButton,
+  StyledSearchIcon,
+  StyledClearIcon,
 } from './SplitTunnelingSettingsStyles';
 
 export default function SplitTunneling() {
@@ -114,6 +119,7 @@ function useFilePicker(
 function LinuxSplitTunnelingSettings(props: IPlatformSplitTunnelingSettingsProps) {
   const { getLinuxSplitTunnelingApplications, launchExcludedApplication } = useAppContext();
 
+  const [searchTerm, setSearchTerm] = useState('');
   const [applications, setApplications] = useState<ILinuxSplitTunnelingApplication[]>();
   useEffect(() => consumePromise(getLinuxSplitTunnelingApplications().then(setApplications)), []);
 
@@ -121,6 +127,11 @@ function LinuxSplitTunnelingSettings(props: IPlatformSplitTunnelingSettingsProps
     messages.pgettext('split-tunneling-view', 'Launch'),
     props.setBrowsing,
     launchExcludedApplication,
+  );
+
+  const filteredApplications = useMemo(
+    () => applications?.filter((application) => includesSearchTerm(application, searchTerm)),
+    [applications, searchTerm],
   );
 
   return (
@@ -135,8 +146,9 @@ function LinuxSplitTunnelingSettings(props: IPlatformSplitTunnelingSettingsProps
         </HeaderSubTitle>
       </SettingsHeader>
 
+      <SearchBar searchTerm={searchTerm} onSearch={setSearchTerm} />
       <ApplicationList
-        applications={applications}
+        applications={filteredApplications}
         onSelect={launchExcludedApplication}
         rowComponent={LinuxApplicationRow}
       />
@@ -243,18 +255,28 @@ export function WindowsSplitTunnelingSettings(props: IPlatformSplitTunnelingSett
     (state: IReduxState) => state.settings.splitTunnelingApplications,
   );
 
+  const [searchTerm, setSearchTerm] = useState('');
   const [applications, setApplications] = useState<IApplication[]>();
   useEffect(() => consumePromise(getWindowsSplitTunnelingApplications().then(setApplications)), []);
 
-  const nonSplitApplications = useMemo(() => {
+  const filteredSplitApplications = useMemo(
+    () =>
+      splitTunnelingApplications.filter((application) =>
+        includesSearchTerm(application, searchTerm),
+      ),
+    [splitTunnelingApplications, searchTerm],
+  );
+
+  const filteredNonSplitApplications = useMemo(() => {
     return applications?.filter(
       (application) =>
+        includesSearchTerm(application, searchTerm) &&
         !splitTunnelingApplications.some(
           (splitTunnelingApplication) =>
             application.absolutepath === splitTunnelingApplication.absolutepath,
         ),
     );
-  }, [applications, splitTunnelingApplications]);
+  }, [applications, splitTunnelingApplications, searchTerm]);
 
   const addWithFilePicker = useFilePicker(
     messages.pgettext('split-tunneling-view', 'Add'),
@@ -280,12 +302,14 @@ export function WindowsSplitTunnelingSettings(props: IPlatformSplitTunnelingSett
       </StyledCellContainer>
 
       <Accordion expanded={true}>
+        <SearchBar searchTerm={searchTerm} onSearch={setSearchTerm} />
+
         <Cell.Section>
           <Cell.SectionTitle>
             {messages.pgettext('split-tunneling-view', 'Excluded applications')}
           </Cell.SectionTitle>
           <ApplicationList
-            applications={splitTunnelingApplications}
+            applications={filteredSplitApplications}
             onRemove={removeSplitTunnelingApplication}
             rowComponent={ApplicationRow}
           />
@@ -296,7 +320,7 @@ export function WindowsSplitTunnelingSettings(props: IPlatformSplitTunnelingSett
             {messages.pgettext('split-tunneling-view', 'Add applications')}
           </Cell.SectionTitle>
           <ApplicationList
-            applications={nonSplitApplications}
+            applications={filteredNonSplitApplications}
             onSelect={addSplitTunnelingApplication}
             rowComponent={ApplicationRow}
           />
@@ -383,4 +407,41 @@ function ApplicationRow<T extends IApplication>(props: IApplicationRowProps<T>) 
       )}
     </Cell.CellButton>
   );
+}
+
+interface ISearchBarProps {
+  searchTerm: string;
+  onSearch: (searchTerm: string) => void;
+}
+
+function SearchBar(props: ISearchBarProps) {
+  const onInput = useCallback(
+    (event: React.FormEvent) => {
+      const element = event.target as HTMLInputElement;
+      props.onSearch(element.value);
+    },
+    [props.onSearch],
+  );
+
+  const onClear = useCallback(() => props.onSearch(''), [props.onSearch]);
+
+  return (
+    <StyledSearchContainer>
+      <StyledSearchInput
+        value={props.searchTerm}
+        onInput={onInput}
+        placeholder={messages.pgettext('split-tunneling-view', 'Search...')}
+      />
+      <StyledSearchIcon source="icon-search" width={18} tintColor={colors.white20} />
+      {props.searchTerm.length > 0 && (
+        <StyledClearButton onClick={onClear}>
+          <StyledClearIcon source="icon-close" width={16} tintColor={colors.white20} />
+        </StyledClearButton>
+      )}
+    </StyledSearchContainer>
+  );
+}
+
+function includesSearchTerm(application: IApplication, searchTerm: string) {
+  return application.name.toLowerCase().includes(searchTerm.toLowerCase());
 }
