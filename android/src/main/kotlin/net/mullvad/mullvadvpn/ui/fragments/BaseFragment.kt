@@ -5,7 +5,7 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import net.mullvad.mullvadvpn.R
 
-abstract class FixAnimationFragment : Fragment() {
+abstract class BaseFragment : Fragment() {
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
         val zAdjustment = when (nextAnim) {
             R.anim.fragment_enter_from_right,
