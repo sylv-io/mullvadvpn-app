@@ -21,10 +21,10 @@ import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.CompletableDeferred
 import net.mullvad.mullvadvpn.R
 import net.mullvad.mullvadvpn.dataproxy.MullvadProblemReport
-import net.mullvad.mullvadvpn.ui.fragments.FixAnimationFragment
+import net.mullvad.mullvadvpn.ui.fragments.BaseFragment
 import net.mullvad.mullvadvpn.util.JobTracker
 
-class ProblemReportFragment : FixAnimationFragment() {
+class ProblemReportFragment : BaseFragment() {
     private val jobTracker = JobTracker()
 
     private var showingEmail by observable(false) { _, oldValue, newValue ->
@@ -144,7 +144,7 @@ class ProblemReportFragment : FixAnimationFragment() {
     }
 
     private fun showLogs() {
-        fragmentManager?.beginTransaction()?.apply {
+        parentFragmentManager.beginTransaction().apply {
             setCustomAnimations(
                 R.anim.fragment_enter_from_right,
                 R.anim.fragment_half_exit_to_left,
@@ -197,7 +197,7 @@ class ProblemReportFragment : FixAnimationFragment() {
     }
 
     private fun showConfirmNoEmailDialog() {
-        val transaction = requireFragmentManager().beginTransaction()
+        val transaction = parentFragmentManager.beginTransaction()
 
         transaction.addToBackStack(null)
 

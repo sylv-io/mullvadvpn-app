@@ -14,7 +14,7 @@ abstract class BaseFragment : Fragment() {
             R.anim.fragment_exit_to_bottom -> 1f
             else -> 0f
         }
-        ViewCompat.setTranslationZ(view!!, zAdjustment)
+        ViewCompat.setTranslationZ(requireView(), zAdjustment)
         return super.onCreateAnimation(transit, enter, nextAnim)
     }
 }
