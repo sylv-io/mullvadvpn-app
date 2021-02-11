@@ -13,7 +13,6 @@
                                                        app:layout_constraintEnd_toStartOf="@id/widgetBarrier"
                                                        app:layout_constraintStart_toStartOf="parent"
                                                        app:layout_constraintTop_toTopOf="parent">
-
         <include layout="@layout/list_item_base" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     <FrameLayout android:id="@+id/widgetContainer"
@@ -26,7 +25,7 @@
                  app:layout_constraintEnd_toEndOf="parent"
                  android:visibility="visible"
                  app:layout_constraintStart_toEndOf="@id/container_without_widget"
-                 app:layout_constraintTop_toTopOf="parent"/>
+                 app:layout_constraintTop_toTopOf="parent" />
     <androidx.constraintlayout.widget.Guideline android:id="@+id/endGuideline"
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
