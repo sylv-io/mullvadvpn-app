@@ -540,7 +540,7 @@ impl<'a> PolicyBatch<'a> {
 
                 // Important to block DNS after allow relay rule (so the relay can operate
                 // over port 53) but before allow LAN (so DNS does not leak to the LAN)
-                self.add_drop_dns_rule();
+                //self.add_drop_dns_rule();
                 *allow_lan
             }
             FirewallPolicy::Connected {
@@ -555,7 +555,7 @@ impl<'a> PolicyBatch<'a> {
                 self.add_allow_dns_rules(tunnel, &dns_servers, TransportProtocol::Tcp)?;
                 // Important to block DNS *before* we allow the tunnel and allow LAN. So DNS
                 // can't leak to the wrong IPs in the tunnel or on the LAN.
-                self.add_drop_dns_rule();
+                //self.add_drop_dns_rule();
                 self.add_allow_tunnel_rules(tunnel)?;
                 if *allow_lan {
                     self.add_block_cve_2019_14899(tunnel);
@@ -569,7 +569,7 @@ impl<'a> PolicyBatch<'a> {
                 self.add_allow_endpoint_rules(allowed_endpoint);
 
                 // Important to drop DNS before allowing LAN (to stop DNS leaking to the LAN)
-                self.add_drop_dns_rule();
+                //self.add_drop_dns_rule();
                 *allow_lan
             }
         };
